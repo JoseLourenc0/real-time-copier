@@ -12,9 +12,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/cli-color": "^2.0.6",
     "@types/node": "^20.12.7",
     "nodemon": "^3.1.0",
     "rimraf": "^5.0.5",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "cli-color": "^2.0.4",
+    "dotenv": "^16.4.5",
+    "moment": "^2.30.1"
   }
 }
