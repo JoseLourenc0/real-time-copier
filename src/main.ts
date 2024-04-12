@@ -4,7 +4,8 @@ import { log } from './class/Logger'
 dotenv.config()
 
 const {
-    PATH_TO_FILES
+    PATH_TO_FILES,
+    FILES_EXTENSION,
 } = process.env
 
 export const mainExecutor = () => {
@@ -13,6 +14,11 @@ export const mainExecutor = () => {
         PATH_TO_FILES = ${PATH_TO_FILES}
     `)
 
-    const fileLister = new FileLister(PATH_TO_FILES!)
-    log(fileLister.listFiles())
+    const filesExtension = FILES_EXTENSION?.split(' ')
+    const fileLister = new FileLister(PATH_TO_FILES!, filesExtension)
+    const files = fileLister.listFiles()
+    log(`
+        Found files: ${files.length}
+    `)
+    log(files)
 }

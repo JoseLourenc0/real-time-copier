@@ -7,13 +7,16 @@ import { log } from './Logger'
 interface FileDetails {
     name: string
     size: number
+    filePath: string
 }
 
 export class FileLister {
     private directoryPath: string
+    private allowedExtensions: string[]
 
-    constructor(directoryPath: string) {
+    constructor(directoryPath: string, allowedExtensions: string[] = []) {
         this.directoryPath = directoryPath
+        this.allowedExtensions = allowedExtensions
     }
     
     private validDirectory() {
@@ -34,6 +37,16 @@ export class FileLister {
         return files
     }
 
+    private isFileValid(fileName: string, stats: fs.Stats) {
+        if (!this.allowedExtensions.length) return true
+        if (!stats.isFile()) return false
+
+        const fileNameExtension = path.extname(fileName).toLocaleLowerCase()
+        if (this.allowedExtensions.includes(fileNameExtension)) return true
+
+        return false
+    }
+
     listFiles(): FileDetails[] {
         try {
             this.validDirectory()
@@ -42,13 +55,17 @@ export class FileLister {
             const fileDetails: FileDetails[] = []
 
             files.forEach((fileName) => {
-                const filePath = path.join(this.directoryPath, fileName);
-                const stats = fs.statSync(filePath);
-                const fileSizeInBytes = stats.size;
-                const fileSizeInKiloBytes = fileSizeInBytes / 1024;
+                const filePath = path.join(this.directoryPath, fileName)
+                const stats = fs.statSync(filePath)
+                if(!this.isFileValid(fileName, stats)) return
+
+                const fileSizeInBytes = stats.size
+                const fileSizeInKiloBytes = fileSizeInBytes / 1024
+
                 fileDetails.push({
                     name: fileName,
-                    size: fileSizeInKiloBytes
+                    size: fileSizeInKiloBytes,
+                    filePath
                 })
             })
     
