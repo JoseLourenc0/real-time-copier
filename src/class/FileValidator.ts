@@ -30,4 +30,9 @@ export class FileValidator {
 
         return false
     }
+
+    isTempFile(fileName: string) {
+        const fileNameExtension = path.extname(fileName).toLocaleLowerCase()
+        return ['.swp', '.tmp'].includes(fileNameExtension)
+    }
 }
