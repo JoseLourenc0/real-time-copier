@@ -1,3 +1,4 @@
+import { FileCopier } from './class/FileCopier'
 import { FileLister } from './class/FileLister'
 import { log } from './class/Logger'
 
@@ -8,5 +9,9 @@ export const mainExecutor = () => {
     log(`
         Found files: ${files.length}
     `)
-    log(files)
+    files.forEach(file => {
+        log('Iniciando file: ' + file)
+        const fileCopier = new FileCopier(file.filePath)
+        fileCopier.startCopying()
+    })
 }

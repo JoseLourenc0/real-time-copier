@@ -5,7 +5,7 @@ const DEFAULT_DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
 
 const getHeader = (type: string, message = '') => type === 'default' ? green(message) : red(message)
 
-export const log = (logMessage: any, type = 'default') => {
+export const log = (logMessage: any, type: 'error' | 'default' = 'default') => {
     const formattedMessage = [logMessage]
 
     const header = getHeader(type, `[${moment().format(DEFAULT_DATE_TIME_FORMAT)}]`)
