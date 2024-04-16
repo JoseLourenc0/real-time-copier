@@ -1,8 +1,10 @@
 
 import fs from 'fs'
 import path from 'path'
-import { FileListerException } from './Exceptions'
+
 import { log } from './Logger'
+import { FileValidator } from './FileValidator'
+import { ENV } from './EnvVars'
 
 interface FileDetails {
     name: string
@@ -12,44 +14,21 @@ interface FileDetails {
 
 export class FileLister {
     private directoryPath: string
-    private allowedExtensions: string[]
+    private fileValidator: FileValidator
 
-    constructor(directoryPath: string, allowedExtensions: string[] = []) {
-        this.directoryPath = directoryPath
-        this.allowedExtensions = allowedExtensions
-    }
-    
-    private validDirectory() {
-        if (!fs.existsSync(this.directoryPath)) {
-            throw new FileListerException(`Directory ${this.directoryPath} does not exist`)
-        }
-
-        if (!fs.statSync(this.directoryPath).isDirectory()) {
-            throw new FileListerException(`"${this.directoryPath}" is not a directory.`)
-        }
+    constructor() {
+        this.fileValidator = new FileValidator()
+        this.directoryPath = ENV.PATH_TO_FILES
     }
 
     private filesInDirectory () {
         const files = fs.readdirSync(this.directoryPath)
-        if (files.length === 0) {
-            throw new FileListerException(`There are no files in ${this.directoryPath}`)
-        }
         return files
-    }
-
-    private isFileValid(fileName: string, stats: fs.Stats) {
-        if (!this.allowedExtensions.length) return true
-        if (!stats.isFile()) return false
-
-        const fileNameExtension = path.extname(fileName).toLocaleLowerCase()
-        if (this.allowedExtensions.includes(fileNameExtension)) return true
-
-        return false
     }
 
     listFiles(): FileDetails[] {
         try {
-            this.validDirectory()
+            this.fileValidator.validDirectory(this.directoryPath)
 
             const files = this.filesInDirectory()
             const fileDetails: FileDetails[] = []
@@ -57,7 +36,7 @@ export class FileLister {
             files.forEach((fileName) => {
                 const filePath = path.join(this.directoryPath, fileName)
                 const stats = fs.statSync(filePath)
-                if(!this.isFileValid(fileName, stats)) return
+                if(!this.fileValidator.isFileValid(fileName, stats)) return
 
                 const fileSizeInBytes = stats.size
                 const fileSizeInKiloBytes = fileSizeInBytes / 1024
