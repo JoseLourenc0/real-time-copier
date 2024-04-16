@@ -2,7 +2,6 @@ import fs from 'fs'
 import path from 'path'
 import { ENV } from './EnvVars'
 import { FileValidator } from './FileValidator'
-import { log } from './Logger'
 
 export class FolderWatcher {
     private directoryPath: string
